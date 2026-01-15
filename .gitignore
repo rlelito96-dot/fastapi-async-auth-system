@@ -25,6 +25,7 @@ docker-compose.override.yml
 # Alembic migrations
 alembic/
 alembic/versions/*.pyc
+alembic.ini
 
 # Test output
 htmlcov/
