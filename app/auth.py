@@ -3,6 +3,8 @@ from fastapi import Depends, Header, HTTPException, status
 from passlib.context import CryptContext
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
+from app.database import get_db
+from sqlalchemy.orm import Session
 
 load_dotenv()
 
@@ -50,7 +52,7 @@ def verify_jwt(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-def get_current_user(authorization: str = Header(...)) -> dict:
+def get_current_user(db: Session = Depends(get_db), authorization: str = Header(...)) -> dict:
     try:
         scheme, token = authorization.split()
         if scheme.lower() != "bearer":
@@ -58,6 +60,6 @@ def get_current_user(authorization: str = Header(...)) -> dict:
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid authorization")
 
-    return verify_jwt(token)
+    return verify_jwt(token, db)
 
 
