@@ -1,14 +1,17 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.models import User
 from app.auth import hash_password
 
-def get_user(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
+async def get_user(db: AsyncSession, user_id: int):
+    result = await db.execute(select(User).filter(User.id == user_id))
+    return result.scalars().first()
 
-def get_user_by_name(db: Session, name: str):
-    return db.query(User).filter(User.name == name).first()
+async def get_user_by_name(db: AsyncSession, name: str):
+    result = await db.execute(select(User).filter(User.name == name))
+    return result.scalars().first()
 
-def create_user(db: Session, user_data):
+async def create_user(db: AsyncSession, user_data):
     db_user = User(
         name=user_data.name,
         website=user_data.website,
@@ -17,18 +20,18 @@ def create_user(db: Session, user_data):
         password_hash=hash_password(user_data.password)
     )
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()
+    await db.refresh(db_user)
     return db_user
 
-def update_user(db: Session, db_user, update_data):
+async def update_user(db: AsyncSession, db_user, update_data):
     for key, value in update_data.dict(exclude_unset=True).items():
         setattr(db_user, key, value)
 
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()
+    await db.refresh(db_user)
     return db_user
 
-def delete_user(db: Session, db_user):
-    db.delete(db_user)
-    db.commit()
+async def delete_user(db: AsyncSession, db_user):
+    await db.delete(db_user)
+    await db.commit()

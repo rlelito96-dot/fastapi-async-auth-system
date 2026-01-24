@@ -52,7 +52,7 @@ def verify_jwt(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-def get_current_user(db: Session = Depends(get_db), authorization: str = Header(...)) -> dict:
+async def get_current_user(authorization: str = Header(...)) -> dict:
     try:
         scheme, token = authorization.split()
         if scheme.lower() != "bearer":
@@ -60,6 +60,4 @@ def get_current_user(db: Session = Depends(get_db), authorization: str = Header(
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid authorization")
 
-    return verify_jwt(token, db)
-
-
+    return verify_jwt(token)
