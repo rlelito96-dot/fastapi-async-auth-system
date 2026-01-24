@@ -1,46 +1,42 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
 from app.database import Base, get_db
 from app.auth import get_current_user
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
-engine = create_engine(
+engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False},
                        )
 
 TestingSessionLocal = sessionmaker(
-    autoflush=False,
-    autocommit= False,
-    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit= False,
+    bind=engine
 )
 
 @pytest.fixture(scope="session", autouse=True)
-def create_test_db():
-    Base.metadata_create_all(bind=engine)
+async def create_test_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata_create_all)
     yield
-    Base.metadata.drop_all(bind=engine)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata_drop_all)
 
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
+async def override_get_db():
+    async with TestingSessionLocal() as db:
         yield db
-    finally:
-        db.close()
 
-def override_get_current_user():
-    db = TestingSessionLocal
-    try:
-        yield db
-    finally:
-        db.close()
+
+async def override_get_current_user():
+    return {"id": 1, "email": "test@example.com"}
 
 app.dependency_overrides[get_db] = override_get_db
-app.dependency_overridees[get_current_user] = override_get_current_user
+app.dependency_overrides[get_current_user] = override_get_current_user
 
 @pytest.fixture()
 def client():
