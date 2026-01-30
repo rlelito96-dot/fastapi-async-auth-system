@@ -47,12 +47,15 @@ pytest -v
 The project uses PostgreSQL in a Docker container:   
 
 ### Launching the database and application
-docker-compose up -d
+docker-compose up   
+
+docker-compose up -d       
+(in the background)
 
 ### Checking FastAPI logs  
 docker-compose logs -f app
 
-Default FastAPi port: http://localhost:8000
+Default FastAPi port: http://localhost:8000  
 Default PostgreSQL port: 5432
 
 # CI/CD
