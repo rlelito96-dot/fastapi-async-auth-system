@@ -19,8 +19,10 @@ class UserUpdate(BaseModel):
 class UserOut(User):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+
+    }
 
 class Token(BaseModel):
     access_token: str

@@ -1,5 +1,6 @@
-import pytest
-from fastapi.testclient import TestClient
+import pytest_asyncio
+from httpx import AsyncClient
+from httpx import ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -19,7 +20,7 @@ TestingSessionLocal = sessionmaker(
     bind=engine
 )
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def create_test_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -38,6 +39,8 @@ async def override_get_current_user():
 app.dependency_overrides[get_db] = override_get_db
 app.dependency_overrides[get_current_user] = override_get_current_user
 
-@pytest.fixture()
-def client():
-    return TestClient(app)
+@pytest_asyncio.fixture(scope="session")
+async def async_client(create_test_db):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
