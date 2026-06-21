@@ -1,14 +1,65 @@
-# Title
-FastAPI with Async CI/CD
+# 🔐 FastAPI Async Authentication System
 
-# Installation/ Setup
-### Install dependencies 
+A lightweight backend API built with FastAPI for user authentication and management.  
+It provides JWT-based security, async PostgreSQL access, and secure password hashing.
+
+---
+
+## 🚀 Quick Start
+
+```bash
+cp .env.example .env
+docker compose up -d
 pip install -r requirements.txt
-
-### Starting the server    
 uvicorn app.main:app --reload
+```
 
-# Project description
+---
+
+## 📦 Full Setup
+
+### 1. Clone repository
+
+```bash
+git clone https://github.com/your-username/fastapi-async-auth-system.git
+cd faas
+```
+
+### 2. Create environment file
+
+```bash
+cp .env.example .env
+```
+
+### 3. Start database (Docker)
+
+```bash
+docker compose up -d
+```
+
+### 4. Create virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux / WSL
+venv/Scripts/activate   # Windows
+```
+
+### 5. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Starting the server    
+
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+# 📌 Project description
 This project is a simple login system and user management using FastAPI.
 
 Offers:
@@ -18,7 +69,9 @@ Offers:
 * Database (PostgreSQL/ SQLite) with async CRUD
 * Endpoints tests using TestClient
 
-# Technologies
+---
+
+# 🧰 Technologies
 * Python 3.10+
 * FastAPI
 * SQLAlchemy (async)
@@ -26,39 +79,25 @@ Offers:
 * Passlib for hashing passwords
 * Pytest for tests
 
-# Environment Variables
-Create a .env file in the project root with the following variables:
-### PostgreSQL
-DATABASE_URL=postgresql+asyncpg://user:password@db:5432/dbname
+---
 
-### JWT settings
-JWT_SECRET=your_secret_key_here
-JWT_ALGORITHM=HS256
-JWT_EXPIRE_MINUTES=60
-JWT_ISSUER=myapp
+# 🧪 Tests
 
-### Optional
-DEBUG=True
+```bash
+pytest -vvv
+```
 
-# Tests
-pytest -v
+---
 
-# Docker
-The project uses PostgreSQL in a Docker container:   
+# 📖 API Documentation
 
-### Launching the database and application
-docker-compose up   
+- *API*: http://localhost:8000
+- *Swagger docs*: http://localhost:8000/docs
+- *Redoc*: http://localhost:8000/redoc
 
-docker-compose up -d       
-(in the background)
+---
 
-### Checking FastAPI logs  
-docker-compose logs -f app
-
-Default FastAPi port: http://localhost:8000  
-Default PostgreSQL port: 5432
-
-# CI/CD
+# 🔄 CI/CD
 The project is prepared for automation in the CI/CD pipeline:
 * Automatic tests run on push/pull request
 * Optional linting with black / flake8
