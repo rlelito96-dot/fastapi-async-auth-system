@@ -3,6 +3,7 @@ from app.database import Base
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
+
 # Models
 class User(Base):
     __tablename__ = "users"

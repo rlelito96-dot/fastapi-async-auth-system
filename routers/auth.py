@@ -23,7 +23,8 @@ async def login(user_id: int, password: str, db: AsyncSession = Depends(get_db))
     token = issue_jwt(db_user.id, db_user.role)
     return Token(access_token=token, token_type="bearer")
 
-@router.get("/me",response_model=UserOut)
-async def get_me(user = Depends(get_current_user)):
+
+@router.get("/me", response_model=UserOut)
+async def get_me(user=Depends(get_current_user)):
     """Example of protected endpoint"""
     return user

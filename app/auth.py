@@ -15,28 +15,33 @@ JWT_ISSUER = os.getenv("JWT_ISSUER")
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
+
 
 def verify_password(password: str, hashed) -> bool:
     return pwd_context.verify(password, hashed)
 
+
 def issue_jwt(user_id: int, role: str) -> str:
-    header = {
-        "alg": JWT_ALGORITHM,
-        "typ": "JWT"
-    }
+    header = {"alg": JWT_ALGORITHM, "typ": "JWT"}
 
     payload = {
         "user_id": user_id,
         "role": role,
         "iat": int(datetime.now(timezone.utc).timestamp()),
-        "exp": int((datetime.now(timezone.utc) + timedelta(minutes=JWT_EXPIRE_MINUTES)).timestamp()),
-        "iss": JWT_ISSUER
+        "exp": int(
+            (
+                datetime.now(timezone.utc) + timedelta(minutes=JWT_EXPIRE_MINUTES)
+            ).timestamp()
+        ),
+        "iss": JWT_ISSUER,
     }
 
     token = jwt.encode(JWT_SECRET, payload, algorithms=JWT_ALGORITHM, headers=header)
     return token
+
 
 def verify_jwt(token: str) -> dict:
     try:
