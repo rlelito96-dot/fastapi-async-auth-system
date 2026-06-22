@@ -29,6 +29,8 @@ jobs:
           flake8 app tests
 
       - name: Run tests
+        env:
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
         run: |
           pytest -v
 
