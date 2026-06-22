@@ -45,5 +45,8 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 @pytest_asyncio.fixture(scope="session")
 async def async_client(create_test_db):
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+    ) as client:
         yield client

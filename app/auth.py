@@ -1,10 +1,9 @@
-import jwt, os
-from fastapi import Depends, Header, HTTPException, status
+import jwt
+import os
+from fastapi import Header, HTTPException
 from passlib.context import CryptContext
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
-from app.database import get_db
-from sqlalchemy.orm import Session
 
 load_dotenv()
 
@@ -33,13 +32,18 @@ def issue_jwt(user_id: int, role: str) -> str:
         "iat": int(datetime.now(timezone.utc).timestamp()),
         "exp": int(
             (
-                datetime.now(timezone.utc) + timedelta(minutes=JWT_EXPIRE_MINUTES)
+                datetime.now(timezone.utc)
+                + timedelta(minutes=JWT_EXPIRE_MINUTES)
             ).timestamp()
         ),
         "iss": JWT_ISSUER,
     }
 
-    token = jwt.encode(JWT_SECRET, payload, algorithms=JWT_ALGORITHM, headers=header)
+    token = jwt.encode(JWT_SECRET,
+                       payload,
+                       algorithms=JWT_ALGORITHM,
+                       headers=header
+                       )
     return token
 
 
@@ -57,11 +61,13 @@ def verify_jwt(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-async def get_current_user(authorization: str = Header(...)) -> dict:
+async def get_current_user(authorization: str = Header(...)):
     try:
         scheme, token = authorization.split()
         if scheme.lower() != "bearer":
-            raise HTTPException(status_code=401, detail="Invalid authorization")
+            raise HTTPException(status_code=401,
+                                detail="Invalid authorization"
+                                )
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid authorization")
 
