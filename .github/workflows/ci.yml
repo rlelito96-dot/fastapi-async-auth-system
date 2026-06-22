@@ -10,6 +10,16 @@ jobs:
   build_test:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:15
+        env:
+          POSTGRES_USER: rafal
+          POSTGRES_PASSWORD: lelito
+          POSTGRES_DB: user_app
+        ports:
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v4
 
