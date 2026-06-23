@@ -1,10 +1,9 @@
-import jwt, os
-from fastapi import Depends, Header, HTTPException, status
+import jwt
+import os
+from fastapi import Header, HTTPException
 from passlib.context import CryptContext
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
-from app.database import get_db
-from sqlalchemy.orm import Session
 
 load_dotenv()
 
@@ -15,28 +14,38 @@ JWT_ISSUER = os.getenv("JWT_ISSUER")
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
+
 
 def verify_password(password: str, hashed) -> bool:
     return pwd_context.verify(password, hashed)
 
+
 def issue_jwt(user_id: int, role: str) -> str:
-    header = {
-        "alg": JWT_ALGORITHM,
-        "typ": "JWT"
-    }
+    header = {"alg": JWT_ALGORITHM, "typ": "JWT"}
 
     payload = {
         "user_id": user_id,
         "role": role,
         "iat": int(datetime.now(timezone.utc).timestamp()),
-        "exp": int((datetime.now(timezone.utc) + timedelta(minutes=JWT_EXPIRE_MINUTES)).timestamp()),
-        "iss": JWT_ISSUER
+        "exp": int(
+            (
+                datetime.now(timezone.utc)
+                + timedelta(minutes=JWT_EXPIRE_MINUTES)
+            ).timestamp()
+        ),
+        "iss": JWT_ISSUER,
     }
 
-    token = jwt.encode(JWT_SECRET, payload, algorithms=JWT_ALGORITHM, headers=header)
+    token = jwt.encode(JWT_SECRET,
+                       payload,
+                       algorithms=JWT_ALGORITHM,
+                       headers=header
+                       )
     return token
+
 
 def verify_jwt(token: str) -> dict:
     try:
@@ -52,11 +61,13 @@ def verify_jwt(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-async def get_current_user(authorization: str = Header(...)) -> dict:
+async def get_current_user(authorization: str = Header(...)):
     try:
         scheme, token = authorization.split()
         if scheme.lower() != "bearer":
-            raise HTTPException(status_code=401, detail="Invalid authorization")
+            raise HTTPException(status_code=401,
+                                detail="Invalid authorization"
+                                )
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid authorization")
 
