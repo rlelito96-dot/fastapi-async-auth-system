@@ -8,7 +8,7 @@ from app.main import app
 from app.database import Base, get_db
 from app.auth import get_current_user
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -27,7 +27,7 @@ async def create_test_db():
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-
+    await engine.dispose()
 
 async def override_get_db():
     async with TestingSessionLocal() as db:
