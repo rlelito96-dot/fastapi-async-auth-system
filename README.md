@@ -21,8 +21,8 @@ uvicorn app.main:app --reload
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/your-username/fastapi-async-auth-system.git
-cd faas
+git clone https://github.com/rlelito96-dot/fastapi-async-auth-system.git
+cd fastapi-async-auth-system
 ```
 
 ### 2. Create environment file
